@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie World | Movie Reviews</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #080808;
+    color: #fff;
+}
+
+header {
+    background: #111;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    border-bottom: 2px solid #d4af37;
+}
+
+.logo {
+    color: #d4af37;
+    font-size: 27px;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    transition: .3s;
+}
+
+nav a:hover,
+nav a.active {
+    color: #d4af37;
+}
+
+.page {
+    display: none;
+    padding: 40px 6%;
+    min-height: 70vh;
+}
+
+.page.active {
+    display: block;
+}
+
+.hero {
+    min-height: 430px;
+    background:
+        linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.85)),
+        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600")
+        center/cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.hero h1 {
+    color: #d4af37;
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+.btn {
+    background: #d4af37;
+    color: #080808;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #f5d76e;
+}
+
+.section-title {
+    text-align: center;
+    color: #d4af37;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+.search-box {
+    display: block;
+    width: 100%;
+    max-width: 550px;
+    padding: 14px;
+    margin: 0 auto 20px;
+    background: #191919;
+    color: white;
+    border: 1px solid #d4af37;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.filter-row {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.filter-row select {
+    background: #191919;
+    color: white;
+    border: 1px solid #d4af37;
+    border-radius: 5px;
+    padding: 11px;
+    font-size: 15px;
+}
+
+.movie-count {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.movie-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 25px;
+}
+
+.movie-card {
+    background: #191919;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: .3s;
+}
+
+.movie-card:hover {
+    transform: translateY(-7px);
+    border-color: #d4af37;
+    box-shadow: 0 5px 20px rgba(212,175,55,.2);
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background: #222;
+}
+
+.movie-info {
+    padding: 16px;
+}
+
+.movie-info h3 {
+    color: #d4af37;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.movie-info p {
+    color: #ccc;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.rating {
+    color: #f5d76e !important;
+    font-weight: bold;
+}
+
+.review-card,
+.about-content {
+    max-width: 850px;
+    margin: 20px auto;
+    background: #191919;
+    padding: 25px;
+    border-radius: 8px;
+    border-left: 4px solid #d4af37;
+    line-height: 1.8;
+}
+
+.review-card h3,
+.about-content h3 {
+    color: #d4af37;
+    margin-bottom: 10px;
+}
+
+.about-content {
+    text-align: center;
+}
+
+footer {
+    background: #111;
+    border-top: 2px solid #d4af37;
+    text-align: center;
+    padding: 25px;
+    color: #aaa;
+    line-height: 1.8;
+}
+
+.no-results {
+    text-align: center;
+    color: #d4af37;
+    grid-column: 1 / -1;
+    padding: 30px;
+}
+
+@media(max-width: 600px) {
+    header {
+        justify-content: center;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .page {
+        padding: 25px 4%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🎬 MOVIE WORLD</div>
+
+    <nav>
+        <a href="#home" onclick="showPage('home',this)" class="active">Home</a>
+        <a href="#movies" onclick="showPage('movies',this)">Movies</a>
+        <a href="#toprated" onclick="showPage('toprated',this)">Top Rated</a>
+        <a href="#reviews" onclick="showPage('reviews',this)">Reviews</a>
+        <a href="#about" onclick="showPage('about',this)">About</a>
+    </nav>
+</header>
+
+<!-- HOME PAGE -->
+<section id="home" class="page active">
+
+    <div class="hero">
+        <h1>Welcome to Movie World</h1>
+        <p>Discover movies, explore ratings and read reviews.</p>
+        <button class="btn" onclick="showPage('movies')">
+            Explore Movies
+        </button>
+    </div>
+
+    <h2 class="section-title" style="margin-top:40px">
+        Featured Movies
+    </h2>
+
+    <div class="movie-container" id="featuredMovies"></div>
+</section>
+
+<!-- MOVIES PAGE -->
+<section id="movies" class="page">
+
+    <h2 class="section-title">All Movies Collection</h2>
+
+    <input
+        type="text"
+        id="searchInput"
+        class="search-box"
+        placeholder="🔍 Search movies..."
+        oninput="displayMovies()"
+    >
+
+    <div class="filter-row">
+        <select id="genreFilter" onchange="displayMovies()">
+            <option value="All">All Genres</option>
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Drama">Drama</option>
+            <option value="Horror">Horror</option>
+            <option value="Animation">Animation</option>
+            <option value="Romance">Romance</option>
+            <option value="Thriller">Thriller</option>
+            <option value="Crime">Crime</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Comedy">Comedy</option>
+        </select>
+    </div>
+
+    <p class="movie-count" id="movieCount"></p>
+
+    <div class="movie-container" id="allMovies"></div>
+</section>
+
+<!-- TOP RATED PAGE -->
+<section id="toprated" class="page">
+    <h2 class="section-title">⭐ Top Rated Movies</h2>
+    <div class="movie-container" id="topMovies"></div>
+</section>
+
+<!-- REVIEWS PAGE -->
+<section id="reviews" class="page">
+
+    <h2 class="section-title">Movie Reviews</h2>
+
+    <div class="review-card">
+        <h3>Oppenheimer</h3>
+        <p class="rating">⭐ 8.3/10</p>
+        <p>A powerful historical drama with excellent performances,
+        cinematography and storytelling.</p>
+    </div>
+
+    <div class="review-card">
+        <h3>Interstellar</h3>
+        <p class="rating">⭐ 8.7/10</p>
+        <p>A brilliant science-fiction movie exploring space,
+        time, love and human survival.</p>
+    </div>
+
+    <div class="review-card">
+        <h3>Avengers: Endgame</h3>
+        <p class="rating">⭐ 8.4/10</p>
+        <p>An emotional superhero adventure with amazing action
+        and memorable characters.</p>
+    </div>
+
+    <div class="review-card">
+        <h3>The Dark Knight</h3>
+        <p class="rating">⭐ 9.0/10</p>
+        <p>An outstanding superhero crime thriller with a gripping story.</p>
+    </div>
+
+    <div class="review-card">
+        <h3>Inception</h3>
+        <p class="rating">⭐ 8.8/10</p>
+        <p>A creative science-fiction thriller that explores dreams
+        and the human mind.</p>
+    </div>
+
+</section>
+
+<!-- ABOUT PAGE -->
+<section id="about" class="page">
+
+    <h2 class="section-title">About Movie World</h2>
+
+    <div class="about-content">
+        <h3>🎬 Our Website</h3>
+
+        <p>
+            Movie World is a movie review website designed for movie lovers.
+            Visitors can explore more than 100 movies, check ratings,
+            search by title and discover different genres.
+        </p>
+
+        <h3>Our Features</h3>
+
+        <p>
+            ✔ More than 100 movies<br>
+            ✔ Movie images<br>
+            ✔ Movie ratings<br>
+            ✔ Search functionality<br>
+            ✔ Genre filters<br>
+            ✔ Top-rated movies<br>
+            ✔ Movie reviews<br>
+            ✔ Easy navigation
+        </p>
+
+        <h3>Our Goal</h3>
+
+        <p>
+            Our goal is to make discovering movies simple,
+            interesting and enjoyable for everyone.
+        </p>
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 Movie World | All Rights Reserved</p>
+    <p>Designed with ❤️ for Movie Lovers</p>
+</footer>
+
+<script>
+
+// MOVIE DATABASE - 110 MOVIES
+// Format: Movie name, genre, rating, poster image
+
+const movies = [
+["Avatar","Sci-Fi",7.9,"8Gxv8gSFCU0XGDykEGv7zR1n2ua"],
+["Avatar: The Way of Water","Adventure",7.6,"t6HIqrRAclMCA60NsSmeqe9RmNV"],
+["Avengers: Endgame","Action",8.4,"or06FN3Dka5tukK1e9sl16pB3iy"],
+["Avengers: Infinity War","Action",8.4,"7WsyChQLEftFiDOVTGkv3hFpyyt"],
+["The Avengers","Action",8.0,"RYMX2wcKCBAr24UyPD7xwmjaTn"],
+["Iron Man","Action",7.9,"78lPtwv72eTNqFW9COBYI0dWDJa"],
+["Iron Man 2","Action",7.0,"6WBeq4fCfn7AN0o21W9qNcRF2l9"],
+["Iron Man 3","Action",7.1,"qhPtAc1TKbMPqNvcdXSOn9Bn7hZ"],
+["Black Panther","Action",7.3,"uxzzxijgPIY7slzFvMotPv8wjKA"],
+["Doctor Strange","Fantasy",7.5,"uGBVj3bEbCoZbDjjl9wTxcygko1"],
+["Thor","Action",7.0,"prSfAi1xGrhLQNxVSUFh61xQ4Qy"],
+["Thor: Ragnarok","Action",7.9,"rzRwTcFvttcN1ZpX2xv4j3tSdJu"],
+["Captain America: The First Avenger","Action",6.9,"vSNxAJTlD0r02V9sPYpOjqDZXUK"],
+["Captain America: Civil War","Action",7.8,"rAGiXaUfPzY7CDEyNKUofk3Kw2e"],
+["Guardians of the Galaxy","Sci-Fi",8.0,"r7vmZjiyZw9rpJMQJdXpjgiCOk9"],
+["Spider-Man: No Way Home","Action",8.2,"1g0dhYtq4irTY1GPXvft6k4YLjm"],
+["Spider-Man: Homecoming","Action",7.4,"c24sv2weTHPsmDa7jEMN0m2P3RT"],
+["Spider-Man: Far From Home","Action",7.4,"4q2NNj4S5dG2RLF9CpXsej7yXl"],
+["Joker","Crime",8.1,"udDclJoHjfjb8Ekgsd4FDteOkCU"],
+["The Batman","Action",7.8,"74xTEgt7R36Fpooo50r9T25onhq"],
+["The Dark Knight","Action",9.0,"qJ2tW6WMUDux911r6m7haRef0WH"],
+["Batman Begins","Action",8.2,"1P3ZyEq02wcTMd3iE4ebtLvncvH"],
+["The Dark Knight Rises","Action",8.4,"hr0L2aueqlP2BYUblTTjmtn0hw4"],
+["Superman","Action",7.0,"d8Ryb8AunYAuycVKDp5HpdWPKgC"],
+["Man of Steel","Action",7.1,"7rIPjn5TUK04O25ZkMyHrGNPgLx"],
+["Wonder Woman","Action",7.4,"imekS7f1OuHyUP2LAiTEM0zBzUz"],
+["Aquaman","Adventure",6.8,"5Kg76ldv7VxeX9YlcQXiowHgdX6"],
+["Oppenheimer","Drama",8.3,"ptpr0kGAckfQkJeJIt8st5dglvd"],
+["Interstellar","Sci-Fi",8.7,"gEU2QniE6E77NI6lCU6MxlNBvIx"],
+["Inception","Sci-Fi",8.8,"oYuLEt3zVCKq57qu2F8dT7NIa6f"],
+["Dunkirk","War",7.8,"b4Oe15CGLL61Ped0RAS9JpqdmCt"],
+["Tenet","Action",7.3,"k68nPLbIST6NP96JmTxmZijEvCA"],
+["The Prestige","Drama",8.5,"tRNlZbgNCNOpLpbPEz5L8G8A0JN"],
+["Titanic","Romance",7.9,"9xjZS2rlVxm8SFx8kPC3aIGCOYQ"],
+["The Revenant","Adventure",8.0,"ji3ecJphATlVgWNY0B0RVXZizdf"],
+["The Wolf of Wall Street","Drama",8.2,"34m2tygAYBGqA9MXKhRDtzYd4MR"],
+["Shutter Island","Thriller",8.2,"4GDy0PHYX3VRXUtwK5ysFbg3kEx"],
+["The Departed","Crime",8.5,"nT97ifVT2J1yMQmeq20Qblg61T"],
+["Gladiator","Action",8.5,"ty8TGRuvJLPUmAR1H1nRIsgwvim"],
+["Gladiator II","Action",6.6,"2cxhvwyEwRlysAmRH4iodkvo0z5"],
+["The Matrix","Sci-Fi",8.7,"f89U3ADr1oiB1s9GkdPOEpXUk5H"],
+["The Matrix Reloaded","Sci-Fi",7.2,"9TGHDvWrqKBzwDxDodHYXEmOE6J"],
+["The Matrix Revolutions","Sci-Fi",6.7,"fgm8OZ7o4G1G1F0Z9j4r4W9v"],
+["John Wick","Action",7.4,"fZPSd91yGE9fCcCe6OoQr6E3Bev"],
+["John Wick: Chapter 2","Action",7.4,"hXWBc0ioZP3cN4zCu6SN3Y9mYp"],
+["John Wick: Chapter 3","Action",7.4,"ziEuG1essDuWuC5lpWUaw1uXY2O"],
+["John Wick: Chapter 4","Action",7.6,"vZloFAK7NmvMGKE7VkF5UHaz0I"],
+["Mission Impossible","Action",7.1,"l5uxY5m5OInWpcExIpKG6AR3rgL"],
+["Mission Impossible Fallout","Action",7.7,"AkJQpZp9WoNdj7pLYSj1L0RcMMN"],
+["Top Gun: Maverick","Action",8.2,"62HCnUTziyWcpDaBO2i1DX17ljH"],
+["Top Gun","Action",6.9,"xUuHj3CgmZQ9P2cMaqQs4J0d4Zc"],
+["Jurassic Park","Adventure",8.2,"b1xCNnyrPebIc7EWNZIa6jhb1Ww"],
+["Jurassic World","Adventure",6.9,"rhr4y79GpxQF9IsfJItRXVaoGs4"],
+["King Kong","Adventure",7.2,"6a2HY6UmD7XiDD3NokgaBAXEsD2"],
+["Godzilla","Action",6.4,"iBZhbCVh9py9j2ZVY2Z9FQ"],
+["Godzilla Minus One","Action",7.7,"hU5D5X0mK9wYwZzY"],
+["Transformers","Action",7.0,"phJbaFq3o6j1F8h"],
+["Bumblebee","Action",6.7,"fw02ONlDhrYjTSZV8XO6hhU3ds3"],
+["Fast Five","Action",7.3,"gEfQjjQwY7fh5bI4GlG0RrBu7Pz"],
+["Fast and Furious 7","Action",7.1,"dCgm7efXDmiABSdWDHBDBx2jwmn"],
+["The Fast and the Furious","Action",6.8,"g5s1S7e1r4F9K9X2"],
+["The Conjuring","Horror",7.5,"wVYREutTvI2tmxr6ujrHT704wGF"],
+["The Conjuring 2","Horror",7.3,"zEqyD0SBt6HL7W9W"],
+["Annabelle","Horror",5.4,"y8m4r9"],
+["Insidious","Horror",6.8,"tmlDFIUpGRKiuW0mql7Mk5g8z9L"],
+["The Nun","Horror",5.3,"sFC1ElvoKGdHJIWRpNB3xWJ9lJA"],
+["A Quiet Place","Horror",7.5,"nAU74GmpUk7t5iklEp3bufwDq4n"],
+["It","Horror",7.3,"9E2y5Q7WlCVNEhP5GiVTjhEhx1o"],
+["The Ring","Horror",7.1,"e2t5CKMox7tj7z3j"],
+["Get Out","Horror",7.8,"tFXcEccSQMf3lfhfXKSU9iRBpa3"],
+["Smile","Horror",6.5,"aPqcQwu4VGEewPhagWNncDbJ9Xp"],
+["Frozen","Animation",7.4,"kgwjIb2JDHRhNk13lmSxiClFjVk"],
+["Frozen II","Animation",6.8,"mINJaa34MtknCYl5AjtNJzWj8cD"],
+["Toy Story","Animation",8.3,"uXDfjJbdP4ijW5hWSBrPrlKpxab"],
+["Toy Story 2","Animation",7.9,"2MFIhZAW0CVlEQrFyqwa4U6zqJP"],
+["Finding Nemo","Animation",8.2,"eHuGQ10FUzK1mdOY69wF5pGgEf5"],
+["Finding Dory","Animation",7.2,"3UVe8NL1E2ZdUZ9EDlKGJY5UzE"],
+["The Lion King","Animation",8.5,"sKCr78MXSLixwmZ8DyJLrpMsd15"],
+["Inside Out","Animation",8.1,"2H1TmgdfNtsKlU9jKdeNyYL5y8T"],
+["Inside Out 2","Animation",7.5,"vpnVM9B6NMmQpWeZvzLvDESb2QY"],
+["Coco","Animation",8.4,"gGEsBPAijhVUFoiNpgZXqRVWJt2"],
+["Up","Animation",8.3,"vpbaStTMt8qqXaEgnOR2EE4DNJk"],
+["WALL-E","Animation",8.4,"hbhFnRzzg6ZDmm8YAmxBnQpQIPh"],
+["Ratatouille","Animation",8.1,"t3vaWRPSf6WjDSamIkKDs1iQWna"],
+["Shrek","Animation",7.9,"iB64vpL3dIObOtMZgX3RqdVdQDc"],
+["Kung Fu Panda","Animation",7.6,"wWt4JYXTg5Wr3xBW2phBrMKgp3x"],
+["Despicable Me","Animation",7.6,"6nfkIJB3W2Zg6j6n2Wn7W"],
+["Minions","Animation",6.4,"q0R4crx2SehcEEQEkYObktdeFy"],
+["The Super Mario Bros. Movie","Animation",7.0,"qNBAXBIQlnOThrVvA6mA2B5ggV6"],
+["The Incredibles","Animation",8.0,"2LqaLgk4Z226KkgPJuiOQ58wvrm"],
+["Monsters, Inc.","Animation",8.1,"sgheSKxZkttIe8ONsf2sWXPgip3"],
+["Beauty and the Beast","Romance",8.0,"hUJ0UvQ5tgE2Z9WpfuduVSdiCiU"],
+["Aladdin","Adventure",8.0,"ykUEbfpkf8d0w49pHh0AD2KrT52"],
+["Harry Potter and the Sorcerer's Stone","Fantasy",7.6,"wuMc08IPKEatf9rnMNXvIDxqP4W"],
+["Harry Potter and the Chamber of Secrets","Fantasy",7.4,"sdEOH0992YZ0QSxgXNIGLq1ToUi"],
+["Harry Potter and the Prisoner of Azkaban","Fantasy",7.9,"aWxwnYoe8p2d2fcxOqtvAtJ72Rw"],
+["Harry Potter and the Goblet of Fire","Fantasy",7.7,"fECBtHlr0RB3foNHDiCBXeg9Bv9"],
+["The Lord of the Rings: The Fellowship of the Ring","Adventure",8.8,"6oom5QYQ2yQTMJIbnvbkBL9cHo6"],
+["The Lord of the Rings: The Two Towers","Adventure",8.8,"5VTN0pR8gcqV3EPUHHfMGnJYN9L"],
+["The Lord of the Rings: The Return of the King","Adventure",9.0,"rCzpDGLbOoPwLjy3OAm5NUPOTrC"],
+["The Hobbit: An Unexpected Journey","Adventure",7.8,"yHA9Fc37VmpUA5UncTxxo3rTGVA"],
+["Pirates of the Caribbean","Adventure",8.1,"z8onk7LV9Mmw6zKz4hT6pzzvmvl"],
+["The Amazing Spider-Man","Action",6.9,"fSbqPbqY8lWa2rzKq1nXW5"],
+["Deadpool","Action",8.0,"3E53WEZJqP6aM84D7a2c7d4"],
+["Deadpool 2","Action",7.6,"to0spRl1CMDvyUbOnbb4fTk3VAd"],
+["Logan","Action",8.1,"fnbjcRDYn6YviCcePDnGdyAkYsB"],
+["X-Men: Days of Future Past","Action",7.9,"tYfijzolzgoMOtegh1Y7j2Enorg"],
+["The Social Network","Drama",7.8,"n0ybibhJtQ5icDqTp8eRytcIHJx"],
+["La La Land","Romance",8.0,"uDO8zWDhfWwoFdKS4fzkUJt0Rf0"],
+["Forrest Gump","Drama",8.8,"arw2vcBveWOVZr6pxd9XTd1TdQa"],
+["The Shawshank Redemption","Drama",9.3,"9cjIGR5Gq2a5fQ9r"]
+];
+
+// POSTER IMAGE BASE
+const posterBase = "https://image.tmdb.org/t/p/w500/";
+
+// Generate poster image URL
+function posterURL(movie) {
+    return posterBase + movie[3] + ".jpg";
+}
+
+// Create a movie card
+function createMovieCard(movie) {
+    return `
+        <div class="movie-card">
+            <img
+                src="${posterURL(movie)}"
+                alt="${movie[0]} movie poster"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/400x600/191919/D4AF37?text=Movie+Poster'"
+            >
+
+            <div class="movie-info">
+                <h3>${movie[0]}</h3>
+                <p>Genre: ${movie[1]}</p>
+                <p class="rating">⭐ ${movie[2]}/10</p>
+                <p>Discover this movie on Movie World.</p>
+            </div>
+        </div>
+    `;
+}
+
+// Display all movies
+function displayMovies() {
+    const search = document.getElementById("searchInput")
+        .value.toLowerCase();
+
+    const genre = document.getElementById("genreFilter").value;
+
+    const filteredMovies = movies.filter(movie => {
+        const matchesName = movie[0].toLowerCase().includes(search);
+        const matchesGenre = genre === "All" || movie[1] === genre;
+
+        return matchesName && matchesGenre;
+    });
+
+    document.getElementById("allMovies").innerHTML =
+        filteredMovies.length
+        ? filteredMovies.map(createMovieCard).join("")
+        : '<p class="no-results">No movies found. Try another search.</p>';
+
+    document.getElementById("movieCount").textContent =
+        "Showing " + filteredMovies.length +
+        " of " + movies.length + " movies";
+}
+
+// Display featured movies
+function displayFeatured() {
+    document.getElementById("featuredMovies").innerHTML =
+        movies.slice(0, 4).map(createMovieCard).join("");
+}
+
+// Display top rated movies
+function displayTopMovies() {
+    const topMovies = [...movies]
+        .sort((a, b) => b[2] - a[2])
+        .slice(0, 12);
+
+    document.getElementById("topMovies").innerHTML =
+        topMovies.map(createMovieCard).join("");
+}
+
+// Navigation between sections
+function showPage(pageId, clickedLink) {
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    document.querySelectorAll("nav a").forEach(link => {
+        link.classList.remove("active");
+    });
+
+    if (clickedLink) {
+        clickedLink.classList.add("active");
+    } else {
+        const link = document.querySelector(
+            'nav a[href="#' + pageId + '"]'
+        );
+
+        if (link) link.classList.add("active");
+    }
+
+    if (location.hash !== "#" + pageId) {
+        history.pushState(null, "", "#" + pageId);
+    }
+
+    window.scrollTo(0, 0);
+}
+
+// Browser back and forward navigation
+window.addEventListener("popstate", function() {
+    const pageId = location.hash.substring(1) || "home";
+
+    if (document.getElementById(pageId)) {
+        showPage(pageId);
+    }
+});
+
+// Load website content
+displayMovies();
+displayFeatured();
+displayTopMovies();
+
+</script>
+
+</body>
+</html>
